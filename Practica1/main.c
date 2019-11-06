@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "afnd.h"
+#include "transforma.h"
 
 int main(int argc, char ** argv)
 {
@@ -40,7 +41,12 @@ int main(int argc, char ** argv)
 	AFNDImprime(stdout,p_afnd);
 	AFNDADot(p_afnd);
 
+	afd = AFNDTransforma(p_afnd);
+	AFNDImprime(stdout,afd);
+	AFNDADot(afd);
+
 	AFNDElimina(p_afnd);
+	AFNDElimina(afd);
 
 	return 0;
 }
