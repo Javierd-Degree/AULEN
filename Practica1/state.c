@@ -3,22 +3,22 @@
 #include "state.h"
 
 
-/* Estructura para la matriz de transiciones del AFD nuevo. 
+/* Estructura para la matriz de transiciones del AFD nuevo.
 
 struct _State{
 
 	Array con los estados del AFND inicial qie componen el estado del AFD nuevo
-	(ej, si el estado es q0q1q3, este array será [0, 1, 3]). 
+	(ej, si el estado es q0q1q3, este array será [0, 1, 3]).
 	int* elems;
 
-	Entero que indica la longitud del array elems. 
+	Entero que indica la longitud del array elems.
 	int numElems;
 
 	Array que contiene los índices (en el nuevo AFD) de los estados a los que se puede
 	ir desde el estado en el que estamos. Tiene longitud numSimbolos, el primer elemento del
 	array es el estado al que se va con el simbolo 0, luego con el 1... etc.
 	int* connections;
-	
+
 	Puntero al siguiente estado (siguiente fila de la matriz).
 	struct _State *nextState;
 };
@@ -95,7 +95,7 @@ es el estado que se encuentra en la fila correspondiente a state */
 /* 1 si el estado es el mismo que el estado de la fila de la matriz o 0 en caso contrario. */
 int stateEqual(int* elems, int numElems, State* state){
   int i, j, found=0;
-  
+
   /* Si tienen distinto número de elementos devolvemos false */
   if(state->numElems != numElems){
     return 0;
@@ -118,7 +118,7 @@ int stateEqual(int* elems, int numElems, State* state){
 
   /* Si son el mismo devolvemos true */
   return 1;
-}  
+}
 
 /* Genera una nueva fila de la matriz y la añade a esta*/
 /*** Parámetros ***/
@@ -173,7 +173,7 @@ int index_rec(int* elems, int numElems, State* state, int index){
   }
 
   /*Si no, llamamos recursivamente a la función con la siguiente fila de la matriz sumando 1 al index. */
-  return index_rec(elems, numElems, state->nextState, index++);
+  return index_rec(elems, numElems, state->nextState, ++index);
 }
 
 /* PRINCIPAL Devuelve el índice de un estado en la matriz de transiciones, es decir,
@@ -188,9 +188,3 @@ int index_main(int* elems, int numElems, State* state){
   /* Llamamos a la función recursiva con indice 0 */
   return index_rec(elems, numElems, state, 0);
 }
-
-
-
-
-
-

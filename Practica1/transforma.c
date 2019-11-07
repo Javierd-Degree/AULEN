@@ -2,7 +2,7 @@
 #include "state.h"
 #include <stdlib.h>
 #include <string.h>
-#define MAX_LEN 50
+#define MAX_LEN 256
 /*
 - TAD Estado: Almacenamos la lista de estados que corresponde al nuevo estado.
 
@@ -18,22 +18,22 @@ contiene un entero k que indica el indice del nuevo estado destino en la lista d
 
 
 
-/* Estructura para la matriz de transiciones del AFD nuevo. 
+/* Estructura para la matriz de transiciones del AFD nuevo.
 
 struct _State{
 
   Array con los estados del AFND inicial qie componen el estado del AFD nuevo
-  (ej, si el estado es q0q1q3, este array será [0, 1, 3]). 
+  (ej, si el estado es q0q1q3, este array será [0, 1, 3]).
   int* elems;
 
-  Entero que indica la longitud del array elems. 
+  Entero que indica la longitud del array elems.
   int numElems;
 
   Array que contiene los índices (en el nuevo AFD) de los estados a los que se puede
   ir desde el estado en el que estamos. Tiene longitud numSimbolos, el primer elemento del
   array es el estado al que se va con el simbolo 0, luego con el 1... etc.
   int* connections;
-  
+
   Puntero al siguiente estado (siguiente fila de la matriz).
   struct _State *nextState;
 };
@@ -51,7 +51,7 @@ struct _State{
 int *AFNDCierreLEstado(AFND * afnd, int numEstados, int q){
   int i;
   int *cierreTransitivo;
-  
+
   /* Reservamos un array que contendrá el cierre transitivo del estado. */
   cierreTransitivo = (int *)malloc(sizeof(int)*numEstados);
   if (cierreTransitivo == NULL){
@@ -108,10 +108,10 @@ los estados a los que hay conexión. */
 /*** Return ***/
 /* int* con los índices de los estados a los que se puede ir según el array de conexiones proporcionado (formato de índices). */
 int *IndicesListaEstados(int *list, int numEstados, int* numElems){
-  int i, j, sum;
+  int i, j, sum = 0;
   int *result;
 
-  /* Sumamos los elementos del array para pbtener el número de conexiones ue habrá. */
+  /* Sumamos los elementos del array para obtener el número de conexiones que habrá. */
   for (i = 0, sum = 0; i < numEstados; i++){
     sum+=list[i];
   }
@@ -122,8 +122,8 @@ int *IndicesListaEstados(int *list, int numEstados, int* numElems){
     return NULL;
   }
 
-  /* Para cada elemento del array de conexiones inicial, si hay conexión (es un 1) 
-  añadimos al array final el índice del elementodel array. */
+  /* Para cada elemento del array de conexiones inicial, si hay conexión (es un 1)
+  añadimos al array final el índice del elemento del array. */
   for (i = 0, j = 0 ; i < numEstados, j < sum ; i++){
     if(list[i] == 1){
       result[j] = i;
@@ -157,9 +157,10 @@ int *AFNDUnionConexionesEstadoSimbolo(AFND* afnd, int* elems, int numElems, int 
   for(i=0; i<numElems; i++){
     /* Para cada elemento que compone el estado, hallamos su array de conexiones a otros nodos del AFND. */
     conexionesAux = AFNDConexionesEstadoSimbolo(afnd, numEstados, elems[i], s);
+
     for(j=0; j<numEstados; j++){
       /* Unimos el nuevo array con el anterior. */
-      if(conexiones[j] + conexionesAux[j] > 0){
+      if((conexiones[j] + conexionesAux[j]) > 0){
         conexiones[j]=1;
       }else{
         conexiones[j] = 0;
@@ -174,7 +175,7 @@ int *AFNDUnionConexionesEstadoSimbolo(AFND* afnd, int* elems, int numElems, int 
     conexionesAux = AFNDCierreLEstado(afnd, numEstados, elemsConSimbolo[i]);
     for(j=0; j<numEstados; j++){
       /* Unimos los arrays de conexiones de los cierres lambda al array de conexiones que teníamos. */
-      if(conexiones[j] + conexionesAux[j] > 0){
+      if((conexiones[j] + conexionesAux[j]) > 0){
         conexiones[j]=1;
       }else{
         conexiones[j]=0;
@@ -217,7 +218,7 @@ int esFinal(AFND* afnd, int* elems, int numElems){
 /* void */
 void generarNuevoEstado(AFND* afnd, int numSimbolos, int numEstados, State* actualState, State* states){
   int *conexiones, *conexionesAux, *elemsNewState;
-  int i, numElems, res;
+  int i, j, numElems, res;
   /* Reservamos un array de conexiones que será el que irá en el campo connections de la nueva fila de la matriz que se creará. */
   conexiones = (int*)malloc(sizeof(int)*numSimbolos);
   for(i=0; i<numSimbolos; i++){
@@ -226,8 +227,13 @@ void generarNuevoEstado(AFND* afnd, int numSimbolos, int numEstados, State* actu
     /* A partir del array de conexiones obtenido, generamos el array de índices correspondiente.*/
     elemsNewState = IndicesListaEstados(conexionesAux, numEstados, &numElems);
     free(conexionesAux);
+    if(numElems == 0){
+      conexiones[i] = -1;
+      free(elemsNewState);
+      continue;
+    }
 
-    /* Añadimos el nuevo estado a la matriz (si no está ya en ella. */
+    /* Añadimos el nuevo estado a la matriz (si no está ya en ella). */
     res = addState(elemsNewState, numElems, states);
     /*Actualizamos el elemento i del array de conexiones (el correspondiente al símbolo procesado)
     para que sea igual al índice del nuevo elemento del AFD. */
@@ -236,18 +242,6 @@ void generarNuevoEstado(AFND* afnd, int numSimbolos, int numEstados, State* actu
       free(elemsNewState);
     }
   }
-
-  /********** printfs de comprobación **********/
-  printf("Estado: ");
-  for(i=0; i<actualState->numElems; i++){
-    printf("q%d", actualState->elems[i]);
-  }
-  printf("\n");
-  for(i=0; i<numSimbolos; i++){
-    printf("%d", conexiones[i]);
-  }
-  printf("\n");
-  /********** printfs de comprobación **********/
 
   /* Introducimos el array de conexiones en la estructura.*/
   actualState->connections = conexiones;
@@ -266,8 +260,8 @@ AFND* generarAFD(AFND* afnd, State* states, int numSimbolos){
   int i, j, type;
   /*número de estados del AFD nuevo.*/
   int numEstados = numStates(states);
-  char name[MAX_LEN];
-  
+  char name[MAX_LEN], *temp;
+
   /* Creamos el nuevo AFND. */
   afd= AFNDNuevo("afd11", numEstados, numSimbolos);
   for(i=0; i<numSimbolos; i++){
@@ -282,8 +276,12 @@ AFND* generarAFD(AFND* afnd, State* states, int numSimbolos){
     for(j=0; j<actualState->numElems; j++){
       /*Para cada elemento del estado de la fila de la matriz de transiciones,
       generamos su nombre concatenando los nombres que tenían estos estados en el AFND. */
-      strcat(name, AFNDNombreEstadoEn(afnd, actualState->elems[j]));
-      /*TODO Comprobar overflow de tamaño*/
+      temp = AFNDNombreEstadoEn(afnd, actualState->elems[j]);
+      if ((strlen(temp) + strlen(name)) >= MAX_LEN){
+        printf("ERROR: Overflow al crear el nombre del estado\n");
+        return NULL;
+      }
+      strcat(name, temp);
     }
 
     /* Si es la primera fila de la matriz y el estado es final, el estado es INICIAL_Y_FINAL. */
@@ -319,12 +317,12 @@ AFND* generarAFD(AFND* afnd, State* states, int numSimbolos){
       }
       /* Insertamos la transición. */
       AFNDInsertaTransicion(
-        afd, 
+        afd,
         /* El origen es el nombre del estado de actualState. */
         AFNDNombreEstadoEn(afd, index_main(actualState->elems, actualState->numElems, states)),
         /*Símbolo j*/
         AFNDSimboloEn(afd, j),
-        /* El destino es el nombre del estado en la posición j (correspondiente al símbolo) 
+        /* El destino es el nombre del estado en la posición j (correspondiente al símbolo)
         del array de conexiones del estado actualState.*/
         AFNDNombreEstadoEn(afd, actualState->connections[j]));
     }
@@ -369,9 +367,6 @@ AFND * AFNDTransforma(AFND * afnd){
     generarNuevoEstado(afnd, numSimbolos, numEstados, actualState, states);
     actualState = actualState->nextState;
   }
-  /********** printfs de comprobación **********/
-  printf("\n\nnumEstados:  %d\n", numStates(states));
-  /********** printfs de comprobación **********/
 
   /*Generamos el AFD.*/
   afd = generarAFD(afnd, states, numSimbolos);

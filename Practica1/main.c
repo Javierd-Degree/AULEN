@@ -28,21 +28,18 @@ int main(int argc, char ** argv)
 	AFNDInsertaTransicion(p_afnd, "q1", "0", "q1");
 	AFNDInsertaTransicion(p_afnd, "q1", "0", "q4");
 	AFNDInsertaTransicion(p_afnd, "q1", ".", "q2");
-	AFNDInsertaTransicion(p_afnd, "q1", "+", "q3");
 	AFNDInsertaTransicion(p_afnd, "q2", "0", "q3");
 	AFNDInsertaTransicion(p_afnd, "q3", "0", "q3");
-	AFNDInsertaTransicion(p_afnd, "q3", "+", "q4");
 	AFNDInsertaTransicion(p_afnd, "q4", ".", "q3");
 
 	AFNDInsertaLTransicion(p_afnd, "q0", "q1");
 	AFNDInsertaLTransicion(p_afnd, "q3", "q5");
 	AFNDCierraLTransicion(p_afnd);
 
-	AFNDImprime(stdout,p_afnd);
+
 	AFNDADot(p_afnd);
 
 	afd = AFNDTransforma(p_afnd);
-	AFNDImprime(stdout,afd);
 	AFNDADot(afd);
 
 	AFNDElimina(p_afnd);
