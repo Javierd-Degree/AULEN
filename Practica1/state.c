@@ -25,12 +25,12 @@ struct _State{
 
 */
 
-/* Creador de la estructura State. */
-/*** Parámetros ***/
-/* elems -> array con los estados del afnd que componen el estado del AFD.
-/* numElems -> longitud del array elems.
-/*** Return ***/
-/* State* con la fila de la matriz generada. */
+/* Creador de la estructura State.
+*** Parámetros ***
+* elems -> array con los estados del afnd que componen el estado del AFD.
+* numElems -> longitud del array elems.
+*** Return ***
+* State* con la fila de la matriz generada. */
 State* createState(int* elems, int numElems){
   State* newState;
   if(elems == NULL){
@@ -49,11 +49,11 @@ State* createState(int* elems, int numElems){
   return newState;
 }
 
-/* Destructor de la estructura State. */
-/*** Parámetros ***/
-/* state -> puntero a la estructura que se quiere borrar.
-/*** Return ***/
-/* void */
+/* Destructor de la estructura State.
+*** Parámetros ***
+* state -> puntero a la estructura que se quiere borrar.
+*** Return ***
+* void */
 void deleteState(State* state){
   /* Si hay más estados en la matriz, los destruimos */
   if(state->nextState){
@@ -71,11 +71,11 @@ void deleteState(State* state){
   free(state);
 }
 
-/* Contador de filas de la matriz a partir del estado dado */
-/*** Parámetros ***/
-/* state -> puntero a la fila de la matriz a partir de la cueal si quere empezar a contar.
-/*** Return ***/
-/* int con el número de filas. */
+/* Contador de filas de la matriz a partir del estado dado *
+*** Parámetros ***
+* state -> puntero a la fila de la matriz a partir de la cueal si quere empezar a contar.
+*** Return ***
+* int con el número de filas. */
 int numStates(State* state){
   int i;
   /* Si hay estado siguiente, pasamos  este y sumamos 1 al contador */
