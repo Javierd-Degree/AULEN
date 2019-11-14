@@ -41,13 +41,13 @@ struct _State{
 */
 
 
-/* Devuelve el cierre transitivo del estado dado */
-/*** Parámetros ***/
-/* afnd -> autómata inicial.
-/* numEstados -> número de estados del afnd.
-/* q -> estado actual.
-/*** Return ***/
-/* int* con el cierre transitivo del estado (formato de 1s y 0s). */
+/* Devuelve el cierre transitivo del estado dado
+Parámetros
+   afnd -> autómata inicial.
+   numEstados -> número de estados del afnd.
+   q -> estado actual.
+Return
+   int* con el cierre transitivo del estado (formato de 1s y 0s). */
 int *AFNDCierreLEstado(AFND * afnd, int numEstados, int q){
   int i;
   int *cierreTransitivo;
@@ -68,14 +68,14 @@ int *AFNDCierreLEstado(AFND * afnd, int numEstados, int q){
   return cierreTransitivo;
 }
 
-/* Devuelve las conexiones desde q al resto de estados usando el simbolo s */
-/*** Parámetros ***/
-/* afnd -> autómata inicial.
-/* numEstados -> número de estados del afnd.
-/* q -> estado actual.
-/* s -> símbolo procesado.
-/*** Return ***/
-/* int* con las conexiones que hay desde q con el símbolo s (formato de 1s y 0s). */
+/* Devuelve las conexiones desde q al resto de estados usando el simbolo s
+Parámetros
+    afnd -> autómata inicial.
+    numEstados -> número de estados del afnd.
+    q -> estado actual.
+    s -> símbolo procesado.
+Return
+    int* con las conexiones que hay desde q con el símbolo s (formato de 1s y 0s). */
 
 int *AFNDConexionesEstadoSimbolo(AFND * afnd, int numEstados, int q, int s){
   int i;
@@ -99,14 +99,15 @@ int *AFNDConexionesEstadoSimbolo(AFND * afnd, int numEstados, int q, int s){
 
 /* A partir de un array de conexiones de long numEstados donde un 0 es que no hay
 conexion a ese estado y un 1 es que si la hay, genera un array con los índices de
-los estados a los que hay conexión. */
-/* IMPORTANTE numelems es la dirección de una variable donde queremos guardar la longitud del array. */
-/*** Parámetros ***/
-/* list -> array inicial de conexiones en formato de 1s y 0s.
-/* numEstados -> número de estados del afnd.
-/* numElems -> dirección para almacenar el número de elementos que tiene el array que se devuelve.
-/*** Return ***/
-/* int* con los índices de los estados a los que se puede ir según el array de conexiones proporcionado (formato de índices). */
+los estados a los que hay conexión.
+IMPORTANTE numelems es la dirección de una variable donde queremos guardar la longitud del array.
+Parámetros
+    list -> array inicial de conexiones en formato de 1s y 0s.
+    numEstados -> número de estados del afnd.
+    numElems -> dirección para almacenar el número de elementos que tiene el array que se devuelve.
+Return
+    int* con los índices de los estados a los que se puede ir según el array de conexiones proporcionado (formato de índices).
+*/
 int *IndicesListaEstados(int *list, int numEstados, int* numElems){
   int i, j, sum = 0;
   int *result;
@@ -124,7 +125,7 @@ int *IndicesListaEstados(int *list, int numEstados, int* numElems){
 
   /* Para cada elemento del array de conexiones inicial, si hay conexión (es un 1)
   añadimos al array final el índice del elemento del array. */
-  for (i = 0, j = 0 ; i < numEstados, j < sum ; i++){
+  for (i = 0, j = 0 ; (i < numEstados) && (j < sum); i++){
     if(list[i] == 1){
       result[j] = i;
       j++;
@@ -139,15 +140,15 @@ int *IndicesListaEstados(int *list, int numEstados, int* numElems){
 }
 
 /* Recorre el array de elementos de un estado del AFD y para cada uno de ellos halla las transiciones con el símbolo dado,
-es decir, obtiene  finalmente el array de conexiones desde el elemento formado por la union de elementos del AFND (q1q2q4). */
-/*** Parámetros ***/
-/* afnd -> autómata inicial.
-/* elems -> array con los estados del afnd que componen el estado del AFD.
-/* numElems -> longitud del array elems.
-/* numEstados -> número de estados del afnd.
-/* s -> símbolo procesado.
-/*** Return ***/
-/* int* con el array de conexiones (formato de 1s y 0s). */
+es decir, obtiene  finalmente el array de conexiones desde el elemento formado por la union de elementos del AFND (q1q2q4).
+Parámetros
+    afnd -> autómata inicial.
+    elems -> array con los estados del afnd que componen el estado del AFD.
+    numElems -> longitud del array elems.
+    numEstados -> número de estados del afnd.
+    s -> símbolo procesado.
+Return
+    int* con el array de conexiones (formato de 1s y 0s). */
 int *AFNDUnionConexionesEstadoSimbolo(AFND* afnd, int* elems, int numElems, int numEstados, int s){
   int i,j, sumElems;
   int* conexionesAux, *conexiones, *elemsConSimbolo;
@@ -188,13 +189,13 @@ int *AFNDUnionConexionesEstadoSimbolo(AFND* afnd, int* elems, int numElems, int 
   return conexiones;
 }
 
-/* Función que comprueba si el estado del AFD compuesto por los estados elems del AFND es final o no. */
-/*** Parámetros ***/
-/* afnd -> autómata inicial.
-/* elems -> array con los estados del afnd que componen el estado del AFD.
-/* numElems -> longitud del array elems.
-/*** Return ***/
-/* 1 si el estado es final, y 0 si no lo es. */
+/* Función que comprueba si el estado del AFD compuesto por los estados elems del AFND es final o no.
+Parámetros
+    afnd -> autómata inicial.
+    elems -> array con los estados del afnd que componen el estado del AFD.
+    numElems -> longitud del array elems.
+Return
+    1 si el estado es final, y 0 si no lo es. */
 int esFinal(AFND* afnd, int* elems, int numElems){
   int i;
   for(i=0; i<numElems; i++){
@@ -207,18 +208,17 @@ int esFinal(AFND* afnd, int* elems, int numElems){
   return 0;
 }
 
-/* Función que recorre el AFND y genera un nuevo estado del AFD añadiendolo a la matriz. */
-/*** Parámetros ***/
-/* afnd -> autómata inicial.
-/* numSimbolos -> número de sḿbolos en el alfabetod el AFND.
-/* numEstados -> número de estados del afnd.
-/* actualState -> puntero a la fila de la matriz de transiciones correspondiente al estado actual.
-/* states -> puntero al inicio de la matriz de transiciones.
-/*** Return ***/
-/* void */
+/* Función que recorre el AFND y genera un nuevo estado del AFD añadiendolo a la matriz.
+Parámetros
+    afnd -> autómata inicial.
+    numSimbolos -> número de sḿbolos en el alfabetod el AFND.
+    numEstados -> número de estados del afnd.
+    actualState -> puntero a la fila de la matriz de transiciones correspondiente al estado actual.
+    states -> puntero al inicio de la matriz de transiciones.
+*/
 void generarNuevoEstado(AFND* afnd, int numSimbolos, int numEstados, State* actualState, State* states){
   int *conexiones, *conexionesAux, *elemsNewState;
-  int i, j, numElems, res;
+  int i, numElems, res;
   /* Reservamos un array de conexiones que será el que irá en el campo connections de la nueva fila de la matriz que se creará. */
   conexiones = (int*)malloc(sizeof(int)*numSimbolos);
   for(i=0; i<numSimbolos; i++){
@@ -247,13 +247,14 @@ void generarNuevoEstado(AFND* afnd, int numSimbolos, int numEstados, State* actu
   actualState->connections = conexiones;
 }
 
-/* Función que genera el AFND a partir de la matriz de transiciones.*/
-/*** Parámetros ***/
-/* afnd -> autómata inicial.
-/* numSimbolos -> número de sḿbolos en el alfabetod el AFND.
-/* states -> puntero al inicio de la matriz de transiciones.
-/*** Return ***/
-/* AFND* con el AFD generado. */
+/* Función que genera el AFND a partir de la matriz de transiciones.
+Parámetros
+    afnd -> autómata inicial.
+    numSimbolos -> número de sḿbolos en el alfabetod el AFND.
+    states -> puntero al inicio de la matriz de transiciones.
+Return
+    AFND* con el AFD generado.
+*/
 AFND* generarAFD(AFND* afnd, State* states, int numSimbolos){
   AFND * afd;
   State* actualState = states;
@@ -263,7 +264,7 @@ AFND* generarAFD(AFND* afnd, State* states, int numSimbolos){
   char name[MAX_LEN], *temp;
 
   /* Creamos el nuevo AFND. */
-  afd= AFNDNuevo("afd11", numEstados, numSimbolos);
+  afd= AFNDNuevo("afd", numEstados, numSimbolos);
   for(i=0; i<numSimbolos; i++){
     /* Insertamos los símbolos del alfabeto. */
     afd = AFNDInsertaSimbolo(afd, AFNDSimboloEn(afnd, i));
@@ -334,11 +335,12 @@ AFND* generarAFD(AFND* afnd, State* states, int numSimbolos){
 }
 
 
-/*Función que transforma un AFND en AFD.*/
-/*** Parámetros ***/
-/* afnd -> autómata inicial.
-/*** Return ***/
-/* AFND* con el AFD resultado. */
+/*Función que transforma un AFND en AFD.
+Parámetros
+    afnd -> autómata inicial.
+Return
+    AFND* con el AFD resultado.
+*/
 AFND * AFNDTransforma(AFND * afnd){
   AFND *afd;
   int numEstados, estadoAux, numElems, numSimbolos;
@@ -350,8 +352,6 @@ AFND * AFNDTransforma(AFND * afnd){
 
   numEstados = AFNDNumEstados(afnd);
   numSimbolos = AFNDNumSimbolos(afnd);
-  /* Hacemos el cierre transitivo por lambdas para usarlo siempre que lo necesitemos */
-  afnd = AFNDCierraLTransicion(afnd);
   /*Obtenemos el estado inicial del AFND*/
   estadoAux = AFNDIndiceEstadoInicial(afnd);
   /*Obtenemos su cierre transitivo*/

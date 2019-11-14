@@ -1,0 +1,18 @@
+Practica 1 Aulen
+Desarrollada por Javier Delgado del Cerro y Javier López Cano (Pareja 4).
+
+En esta práctica hemos desarrollado un programa C que nos permite obtener un autómata finito determinista a partir de uno no determinista.
+Para ello, nos hemos basado en la creación de una estructura llamada State que representa los nuevos estados del autómata determinista, y funciona además como una lista enlazada.
+Recorremos el autómata inicial creando los nuevos estados correspondientes y una vez tenemos todos los estados con sus respectivas conexiones construimos el autómata finito usando la librería proporcionada.
+
+-- Documentación --
+Todo el código está comentado, explixando el funcionamiento y la estructura del TAD State.
+
+-- Pruebas --
+Hemos adjuntado varios archivos que permiten probar la práctica y se encuentran en la carpeta Ejemplos.
+Para probarlos, basta con hacer make, de forma que se compilan, se ejecuta cada uno de ellos y se guardan el automata inicial y el final en imagenes de la forma Ejemplo<i>.png y Ejemplo<i>_sol.png
+
+- Ejemplo1: Es el ejemplo dado en clase
+- Ejemplo2: Un autómata no determinista muy simple que encadena varias Lambdas.
+- Ejemplo3: Un autómata no determinista que reconoce numeros decimales tanto positivos como negativos.
+- Ejemplo4: Un autómata que ya es determinista, y que permite comprobar que en ese caso no varía.
