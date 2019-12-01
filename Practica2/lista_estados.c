@@ -235,3 +235,35 @@ void removeLListFirstElem(LList* list){
   free(list->head);
   list->head = aux;
 }
+
+
+/* Funcion recursiva auxiliar
+Compara dos listas. Como los elementos se almacenan de forma ordenada, es muy simple.
+Parametros
+  state1 -> puntero a la primera lista
+  state2 -> puntero a la segunda lista
+Return
+  1 si son iguales, 0 si no
+*/
+int cmpLListAux(State* state1, State* state2){
+  if ((state1 == NULL && state2 != NULL) || (state1 != NULL && state2 == NULL)){
+    return 0;
+  }
+
+  if (state1->index != state2->index){
+    return 0;
+  }
+
+  return cmpLListAux(state1->nextState, state2->nextState);
+}
+
+/* Compara dos listas
+Parametros
+  list1 -> puntero a la primera lista
+  list2 -> puntero a la segunda lista
+Return
+  1 si son iguales, 0 si no
+*/
+int cmpLList(LList* list1, LList* list1){
+  return cmpLListAux(list1->head, list2->head);
+}

@@ -9,22 +9,8 @@
 int main(int argc, char ** argv)
 {
 	AFND * p_afnd;
-	int* accesibles;
-	int i, numEstados;
-
-
-	LList * list;
-	list = createLList(5);
-	/* printState(state); */
-	addToLList(list, 4);
-	addToLList(list, 3);
-	addToLList(list, 5);
-	addToLList(list, -1);
-	addToLList(list, 12);
-	printLList(list);
-	printf("Num elementos %d\n", getLListLength(list));
-	deleteLList(list);
-
+	int *accesibles;
+	int i, numEstados, numAccesibles;
 
 	p_afnd= AFNDNuevo("afnd", 6, 2);
 
@@ -53,13 +39,22 @@ int main(int argc, char ** argv)
 
 
 	numEstados = AFNDNumEstados(p_afnd);
+
+	/*Obtenemos una lista que contenga unicamente los estados accesibles*/
 	accesibles = estadosAccesibles(p_afnd);
-	for(i=0; i<numEstados; i++){
-		if (accesibles[i] == 1)
-			printf("%d\t", i);
+	for (i=0, numAccesibles=0; i<numEstados; i++){
+		if (accesibles[i] == 1){
+			accesibles[numAccesibles] = i;
+			numAccesibles++;
+		}
 	}
 
+	for (i=0; i<numAccesibles; i++){
+		printf("%d\t", accesibles[i]);
+	}
 	printf("\n");
+
+	estadosDistinguibles(p_afnd, accesibles, numAccesibles);
 
 	free(accesibles);
 	AFNDElimina(p_afnd);

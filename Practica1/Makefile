@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -g -Wall -ansi -pedantic
-EJS = ejemplo1 ejemplo2 ejemplo3 ejemplo4
+EJS = ejemplo1 ejemplo2 ejemplo3 ejemplo4 ejemplo5
 ######################################################################################################################################
 
 all: $(EJS)
@@ -31,6 +31,12 @@ ejemplo4: afnd.o
 	./ejemplo4
 	dot -Tpng afnd.dot > Ejemplo4.png
 	dot -Tpng afd.dot > Ejemplo4_sol.png
+
+ejemplo5: afnd.o
+	$(CC) $(CFLAGS) ejemplo5.c state.c afnd.o transforma.c -o ejemplo5
+	./ejemplo5
+	dot -Tpng afnd.dot > Ejemplo5.png
+	dot -Tpng afd.dot > Ejemplo5_sol.png
 
 clean:
 	rm -rf *.o *.dot *.png $(EJS)

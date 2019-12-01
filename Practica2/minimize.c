@@ -80,3 +80,26 @@ int* estadosAccesibles(AFND* afd){
   deleteLList(descubiertos);
   return listaAccesibles;
 }
+
+void *estadosDistinguibles(AFND* afd, int* estadosAccesibles, int numAccesibles){
+  LList *finales, *noFinales;
+  int i, aux;
+
+  finales = createLList();
+  noFinales = createLList();
+
+  for (i=0; i<numAccesibles; i++){
+    aux = AFNDTipoEstadoEn(afd, estadosAccesibles[i]);
+    if (aux == FINAL || aux == INICIAL_Y_FINAL){
+      addToLList(finales, estadosAccesibles[i]);
+    }else{
+      addToLList(noFinales, estadosAccesibles[i]);
+    }
+  }
+
+  printLList(finales);
+  printLList(noFinales);
+
+  deleteLList(finales);
+  deleteLList(noFinales);
+}
