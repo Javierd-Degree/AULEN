@@ -82,6 +82,45 @@ int* estadosAccesibles(AFND* afd){
 }
 
 void *estadosDistinguibles(AFND* afd, int* estadosAccesibles, int numAccesibles){
+  int **matriz, i, j, tipo;
+
+  /* Aunque la matriz sea simétrica, usamos una matriz cuadrada para simplificar*/
+  matriz = (int *)malloc(sizeof(int)*numAccesibles);
+  if (matriz == NULL){
+    printf("Error al reservar la matriz\n");
+    return NULL;
+  }
+
+  for (i=0; i<numAccesibles; i++){
+    matriz[i] = (int *)calloc(numAccesibles, sizeof(int));
+    if (matriz[i] == NULL){
+      for (; i>0; i--){
+        free(matriz[i-1]);
+      }
+      printf("Error al reservar la matriz\n");
+      return NULL;
+    }
+  }
+
+  /* En primer lugar, comparamos todos los pares de estados
+  y marcamos como distinguibles aquellos pares en los que
+  uno es final y el otro no */
+  for (i=0; i<numAccesibles; i++){
+    tipo = AFNDTipoEstadoEn(afd, estadosAccesibles[i]);
+    for (j=i+1; j<numAccesibles; j++){
+      tipo2 = AFNDTipoEstadoEn(afd, estadosAccesibles[j]);
+      /* Si uno es final y el otro no, marcamos como distinguibles */
+      if((tipo1 == FINAL || tipo1 == INICIAL_Y_FINAL) != (tipo2 == FINAL || tipo2 == INICIAL_Y_FINAL)){
+        matriz[i][j] = 1;
+        matriz[j][i] = 1;
+      }
+    }
+  }
+
+
+}
+
+void *estadosDistinguibles2(AFND* afd, int* estadosAccesibles, int numAccesibles){
   LList *finales, *noFinales;
   int i, aux;
 
