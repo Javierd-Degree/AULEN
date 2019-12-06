@@ -4,10 +4,10 @@
 
 #include "afnd.h"
 #include "minimize.h"
-#include "lista_estados.h"
 
 int main(int argc, char ** argv)
 {
+	
 	AFND * p_afnd;
 	int *accesibles;
 	int i, numEstados, numAccesibles;
@@ -40,7 +40,7 @@ int main(int argc, char ** argv)
 
 	numEstados = AFNDNumEstados(p_afnd);
 
-	/*Obtenemos una lista que contenga unicamente los estados accesibles*/
+	/* Obtenemos una lista que contenga unicamente los estados accesibles */
 	accesibles = estadosAccesibles(p_afnd);
 	for (i=0, numAccesibles=0; i<numEstados; i++){
 		if (accesibles[i] == 1){
@@ -60,4 +60,6 @@ int main(int argc, char ** argv)
 	AFNDElimina(p_afnd);
 
 	return 0;
+
+	
 }

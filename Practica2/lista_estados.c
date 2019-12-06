@@ -264,6 +264,6 @@ Parametros
 Return
   1 si son iguales, 0 si no
 */
-int cmpLList(LList* list1, LList* list1){
+int cmpLList(LList* list1, LList* list2){
   return cmpLListAux(list1->head, list2->head);
 }

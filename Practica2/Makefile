@@ -1,6 +1,7 @@
 CC = gcc
 CFLAGS = -g -Wall -ansi -pedantic
-EJS = ejemplo1
+OBJS = afnd.o lista_estados.o diccionario_pares.o minimize.o
+EJS = ejemplo1 ejemplo2 ejemplo3
 ######################################################################################################################################
 
 all: $(EJS)
@@ -14,12 +15,17 @@ lista_estados.o: lista_estados.c lista_estados.h
 diccionario_pares.o: diccionario_pares.c diccionario_pares.h
 	$(CC) -c -g diccionario_pares.c
 
-minimize.o: minimize.c minimize.h lista_estados.o diccionario_pares.o
-	$(CC) -c -g minimize.c lista_estados.o diccionario_pares.o
+minimize.o: minimize.c minimize.h
+	$(CC) -c -g minimize.c
 
-ejemplo1: afnd.o lista_estados.o minimize.o
-	$(CC) $(CFLAGS) ejemplo1.c afnd.o lista_estados.o minimize.o -o ejemplo1
+ejemplo1: $(OBJS)
+	$(CC) $(CFLAGS) ejemplo1.c $(OBJS) -o ejemplo1
 
+ejemplo2: $(OBJS)
+	$(CC) $(CFLAGS) ejemplo2.c $(OBJS) -o ejemplo2
+
+ejemplo3: $(OBJS)
+	$(CC) $(CFLAGS) ejemplo3.c $(OBJS) -o ejemplo3
 
 clean:
-	rm -rf *.o *.dot *.png $(EJS)
+	rm -rf *.o *.dot *.png *.gch $(EJS)

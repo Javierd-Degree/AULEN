@@ -81,4 +81,14 @@ Parametros
 */
 void removeLListFirstElem(LList* list);
 
+
+/* Compara dos listas
+Parametros
+  list1 -> puntero a la primera lista
+  list2 -> puntero a la segunda lista
+Return
+  1 si son iguales, 0 si no
+*/
+int cmpLList(LList* list1, LList* list2);
+
 #endif

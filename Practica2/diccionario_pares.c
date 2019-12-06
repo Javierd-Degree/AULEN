@@ -1,29 +1,6 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include "diccionario_pares.h"
-
-
-/* Estructura para un nodo dentro de la lista enlazada de pares */
-struct _TupleNode{
-	/* Elementos de la tupla */
-	int a, b;
-	/* Puntero al siguiente nodo */
-	struct _TupleNode *next;
-};
-
-typedef struct _TupleNode TupleNode;
-
-/* Estructura que representa un diccionario.
-Esta indexado por una tupla, y cada clave almacena una lista de tuplas.*/
-struct _TupleDict{
-  /* Par de enteros que almacena la clave */
-  int keyA, keyB;
-	/* Lista de tuplas cuyo primer elemento es la clave */
-	TupleNode *value;
-	/* Puntero al siguiente nodo */
-	struct _TupleDict *next;
-};
-
-typedef struct _TupleDict TupleDict;
 
 /*
 Funcion auxiliar, NO METER EN EL .h
@@ -47,8 +24,12 @@ TupleNode* initTupleNode(int a, int b){
 
 
 void destroyTupleNode(TupleNode* node){
+  if (node == NULL){
+    return;
+  }
+  
   if (node->next != NULL){
-    destroyTupleNode(dict->next);
+    destroyTupleNode(node->next);
   }
 
   free(node);
@@ -73,6 +54,14 @@ int addTupleNode(TupleNode *value, int a, int b){
   return 1;
 }
 
+TupleNode* getNextTupleNode(TupleNode *node){
+  if (node == NULL){
+    return NULL;
+  }
+
+  return node->next;
+}
+
 TupleDict* initTupleDict(int a, int b, TupleNode *value){
   TupleDict *dict;
   dict = (TupleDict *)malloc(sizeof(TupleDict));
@@ -89,6 +78,10 @@ TupleDict* initTupleDict(int a, int b, TupleNode *value){
 
 
 void destroyTupleDict(TupleDict* dict){
+  if (dict == NULL){
+    return;
+  }
+
   if (dict->next != NULL){
     destroyTupleDict(dict->next);
   }
@@ -99,7 +92,7 @@ void destroyTupleDict(TupleDict* dict){
 
 int addTupleDict(TupleDict *dict, int a, int b, TupleNode *value){
   TupleDict *new;
-  if (tupleEquals(dict->keyA, value->keyB, a, b)){
+  if (tupleEquals(dict->keyA, dict->keyB, a, b)){
     return 0;
   }
 
@@ -116,15 +109,35 @@ int addTupleDict(TupleDict *dict, int a, int b, TupleNode *value){
   return 1;
 }
 
-TupleNode* getTupleDict(TupleDict *dict, int a, int b){
-  if (tupleEquals(dict->keyA, value->keyB, a, b)){
+TupleNode* getTupleDictValue(TupleDict *dict, int keyA, int keyB){
+  if (tupleEquals(dict->keyA, dict->keyB, keyA, keyB)){
     return dict->value;
   }
 
   if (dict->next != NULL){
-    return getTupleDict(dict->next, a, b);
+    return getTupleDictValue(dict->next, keyA, keyB);
   }
 
 
   return NULL;
+}
+
+void printTupleNode(TupleNode *node){
+  if (node->next != NULL){
+    printf("(%d, %d), ", node->a, node->b);
+    printTupleNode(node->next);
+  }else{
+    printf("(%d, %d)", node->a, node->b);
+  }
+}
+
+void printTupleDict(TupleDict *dict){
+  if (dict == NULL){
+    return;
+  }
+
+  printf("(%d, %d): [", dict->keyA, dict->keyB);
+  printTupleNode(dict->value);
+  printf("]\n");
+  printTupleDict(dict->next);
 }
