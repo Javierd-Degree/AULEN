@@ -21,7 +21,7 @@ struct _LList{
 typedef struct _LList LList;
 
 
-/* Creador de la estructura LList (Definida en state.h).
+/* Creador de la estructura LList (Definida en lista_estados.h).
 Return
     LList* con la lista creada
 */
