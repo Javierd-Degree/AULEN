@@ -151,6 +151,9 @@ AFND* estadosDistinguibles(AFND* afd, int* estadosAccesibles, int numAccesibles)
 	int dst1, dst2, marcado;
 	TupleDict *dict;
 	TupleNode *list;
+	CompoundState *aux;
+	int lenStatesList, *statesList, type;
+	char name[MAX_LEN], *temp;
 
 	/* Aunque la matriz sea simétrica, usamos una matriz cuadrada para simplificar*/
 	matriz = (int **)malloc(sizeof(int*)*numAccesibles);
@@ -259,20 +262,6 @@ AFND* estadosDistinguibles(AFND* afd, int* estadosAccesibles, int numAccesibles)
 	}
 
 
-	/* Mostramos cuales son distinguibles y cuales no */
-	printf("Estados accesibles:\n");
-	for (i=0; i<numAccesibles; i++){
-		printf("%s\t", AFNDNombreEstadoEn(afd, estadosAccesibles[i]));
-	}
-	printf("\n");
-
-	for (i=0; i<numAccesibles; i++){
-		for (j=0; j<numAccesibles; j++){
-			printf("%d\t", matriz[i][j]);
-		}
-		printf("|%s\n", AFNDNombreEstadoEn(afd, estadosAccesibles[i]));
-	}
-
 	/* Recorremos la matriz obteniendo los estados distinguibles */
 	CompoundState *cmpState = createCompoundState(numAccesibles, 0);
 	for (i=0; i<numAccesibles; i++){
@@ -283,24 +272,14 @@ AFND* estadosDistinguibles(AFND* afd, int* estadosAccesibles, int numAccesibles)
 		}
 	}
 
-	printIndistinguible(cmpState);
 
-	printf("Index de 0: %d\n", getStateIndexOnCompoundState(cmpState, 0));
-	printf("Index de 5: %d\n", getStateIndexOnCompoundState(cmpState, 5));
-	printf("Index de 15: %d\n", getStateIndexOnCompoundState(cmpState, 15));
-
-
+	/* Creamos el nuevo autómata */
 	newAFD = AFNDNuevo("afdSimple", getNumCompoundStates(cmpState), numSimbolos);
 	/* Añadimos todos los simbolos */
 	for(i=0; i<numSimbolos; i++){
 		/* Insertamos los símbolos del alfabeto. */
 		newAFD = AFNDInsertaSimbolo(newAFD, AFNDSimboloEn(afd, i));
 	}
-
-	CompoundState *aux;
-	int lenStatesList, *statesList, type;
-	char name[MAX_LEN], *temp;
-
 	
 
 	/* Creamos todos los nuevos estados */
@@ -390,9 +369,8 @@ AFND* estadosDistinguibles(AFND* afd, int* estadosAccesibles, int numAccesibles)
 	}
 
 
+	/* Liberamos la memoria auxiliar usada */
 	destroyCompoundState(cmpState);
-
-
 	destroyTupleDict(dict);
 	for (i=0; i<numAccesibles; i++){
 		free(matriz[i]);
