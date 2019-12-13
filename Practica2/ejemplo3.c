@@ -8,7 +8,7 @@
 int main(int argc, char ** argv)
 {
 	
-	AFND * p_afnd;
+	AFND * p_afnd, *nafd;
 	int *accesibles;
 	int i, numEstados, numAccesibles;
 
@@ -56,10 +56,13 @@ int main(int argc, char ** argv)
 		}
 	}
 
-	estadosDistinguibles(p_afnd, accesibles, numAccesibles);
+	nafd = estadosDistinguibles(p_afnd, accesibles, numAccesibles);
+
+	AFNDADot(nafd);
 
 	free(accesibles);
 	AFNDElimina(p_afnd);
+	AFNDElimina(nafd);
 
 	return 0;
 

@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -g -Wall -ansi -pedantic
-OBJS = afnd.o lista_estados.o diccionario_pares.o minimize.o
+OBJS = afnd.o lista_estados.o diccionario_pares.o estado_compuesto.o minimize.o
 EJS = ejemplo1 ejemplo2 ejemplo3
 ######################################################################################################################################
 
@@ -14,6 +14,9 @@ lista_estados.o: lista_estados.c lista_estados.h
 
 diccionario_pares.o: diccionario_pares.c diccionario_pares.h
 	$(CC) -c -g diccionario_pares.c
+
+estado_compuesto.o: estado_compuesto.c estado_compuesto.h
+	$(CC) -c -g estado_compuesto.c
 
 minimize.o: minimize.c minimize.h
 	$(CC) -c -g minimize.c
