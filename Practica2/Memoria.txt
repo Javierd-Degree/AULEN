@@ -1,0 +1,20 @@
+Practica 2 Aulen
+Desarrollada por Javier Delgado del Cerro y Javier López Cano (Pareja 4).
+
+En esta práctica hemos desarrollado un programa C que nos permite minimizar un autómata finito determinista eliminando estados inaccesibles y agrupando los indistinguibles.
+Para ello, nos hemos basado en la creación de varias estructuras de datos:
+- lista_estados: una lista enlazada que almacena enteros de forma ordenada sin repeticiones. La usamos para obtener la lista de estados accesibles del autómata.
+- diccionario_pares: diccionario implementado mediante una lista enlazada (no necesitamos que sea eficiente, y una implementación con hash puede llevar mucho tiempo) cuyas claves son tuplas de enteros, y sus valores son listas enlazadas de tuplas de enteros. Nos permite almacenar para cada par de estados no marcados como distinguibles, la lista de todos aquellos que dependen de dicho par, de forma que si finalmente se marcan como distinguibles, podemos marcar sus dependencias de forma recursiva, sin tener que iterar el algoritmo sobre la matriz hasta no ver cambios.
+- estado_compuesto: representa un estado nuevo formado por una serie de estados indistinguibles. A su vez, apunta al siguiente de los nuevos estados. De esta forma, es muy sencillo obtener el índice de un estado del antiguo autómata en el nuevo.
+
+-- Documentación --
+Todo el código está comentado, explicando el funcionamiento.
+
+-- Pruebas --
+Hemos adjuntado varios archivos que permiten probar la práctica y se encuentran en la carpeta Ejemplos.
+Para probarlos, basta con hacer make, de forma que se compilan, se ejecuta cada uno de ellos y se guardan el automata inicial y el final en imagenes de la forma results/Ejemplo<i>.png y results/Ejemplo<i>_min.png.
+
+- Ejemplo1: Es el ejemplo dado en el enunciado de la práctica.
+- Ejemplo2: Un autómata muy simple con estados aislados, pero sin estados indistinguibles.
+- Ejemplo3: Un autómata con estados indistinguibles pero sin estados aislados.
+- Ejemplo4: El autómata dado como segundo ejemplo en las transparencias de minimización. Tiene estados indistinguibles y aislados.

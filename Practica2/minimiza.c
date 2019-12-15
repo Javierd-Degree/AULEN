@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
-#include "minimize.h"
+#include "minimiza.h"
 #include "diccionario_pares.h"
 #include "estado_compuesto.h"
 
@@ -74,6 +74,13 @@ int indiceEstadoAccesible(int p, int* estadosAccesibles, int numAccesibles){
 	return -1;
 }
 
+/*
+Parametros
+	afd -> automata finito determinista cuyos estados accesibles queremos obtener
+Return
+	Lista de unos y ceros donde para cada estado del autómata original, se indica con
+	un 1 si es accesible y con un 0 si no.
+*/
 int* estadosAccesibles(AFND* afd){
 	int numEstados, numSimbolos, aux;
 	int i, j;
@@ -124,7 +131,15 @@ int* estadosAccesibles(AFND* afd){
 	return listaAccesibles;
 }
 
-
+/* Dado un par de estados distinguibles, marca como distinguibles todos aquellos
+pares que dependen de este, almacenados en un diccionario.
+Parametros
+	p -> primero de los estados
+	q -> segundo de los estados
+	matriz -> matriz de distinguibles
+	dict -> diccionario indexado por tuplas de estados, donde para cada tupla
+		se tiene una lista de tuplas que dependen de la clave.
+*/
 void marcarDistinguiblesRecursivo(int p, int q, int **matriz, TupleDict *dict){
 	TupleNode *list, *node;
 
@@ -145,6 +160,10 @@ void marcarDistinguiblesRecursivo(int p, int q, int **matriz, TupleDict *dict){
 	}
 }
 
+/* TODO Dividir en submetodos
+
+
+*/
 AFND* estadosDistinguibles(AFND* afd, int* estadosAccesibles, int numAccesibles){
 	AFND* newAFD;
 	int **matriz, i, j, k, tipo1, tipo2, numSimbolos;
@@ -202,15 +221,30 @@ AFND* estadosDistinguibles(AFND* afd, int* estadosAccesibles, int numAccesibles)
 				dst2 = AFDConexionEstadoSimbolo(afd, estadosAccesibles[j], k);
 
 
+				/* Si uno de los dos tiene imagen para k y el otro no, son distinguibles */
+				if (dst1 != dst2 && (dst1 == -1 || dst2 == -1)){
+					matriz[i][j] = 1;
+					matriz[j][i] = 1;
+					marcado=1;
+					/* Cogemos la lista de dependencias y marcamos de forma recursiva */
+					marcarDistinguiblesRecursivo(i, j, matriz, dict);
+					break;
+				}
+
+				/* Si alguno ninguno tiene imagen para el símbolo k no podemos hacer nada. */
+				if (dst1 == -1 && dst2 == -1){
+					continue;
+				}
 
 				/* Estos son los indices en el automata inicial, no en nuestro array de accesibles. Los transformamos */
 				dst1 = indiceEstadoAccesible(dst1, estadosAccesibles, numAccesibles);
 				dst2 = indiceEstadoAccesible(dst2, estadosAccesibles, numAccesibles);
 				if (dst1 == -1 || dst2 == -1){
-					printf("Error grave. Hemos encontrado un estado que no estaba en nuestra lista de accesibles.\n");
+					printf("ERROR. Hemos encontrado un estado que no estaba en nuestra lista de accesibles");
 					exit(-1);
 				}
 
+				/* Si sus imagenes son distinguibles, ellos tambien */
 				if (matriz[dst1][dst2] == 1 || matriz[dst2][dst1] == 1){
 					matriz[i][j] = 1;
 					matriz[j][i] = 1;
@@ -231,6 +265,11 @@ AFND* estadosDistinguibles(AFND* afd, int* estadosAccesibles, int numAccesibles)
 				for (k=0, marcado=0; k<numSimbolos; k++){
 					dst1 = AFDConexionEstadoSimbolo(afd, estadosAccesibles[i], k);
 					dst2 = AFDConexionEstadoSimbolo(afd, estadosAccesibles[j], k);
+					/* Si alguno no tiene imagen para el símbolo k no podemos hacer nada. */
+					if (dst1 == -1 || dst2 == -1){
+						continue;
+					}
+
 					/* Estos son los indices en el automata inicial, no en nuestro array de accesibles. Los transformamos */
 					dst1 = indiceEstadoAccesible(dst1, estadosAccesibles, numAccesibles);
 					dst2 = indiceEstadoAccesible(dst2, estadosAccesibles, numAccesibles);
@@ -274,7 +313,7 @@ AFND* estadosDistinguibles(AFND* afd, int* estadosAccesibles, int numAccesibles)
 
 
 	/* Creamos el nuevo autómata */
-	newAFD = AFNDNuevo("afdSimple", getNumCompoundStates(cmpState), numSimbolos);
+	newAFD = AFNDNuevo("afd_min", getNumCompoundStates(cmpState), numSimbolos);
 	/* Añadimos todos los simbolos */
 	for(i=0; i<numSimbolos; i++){
 		/* Insertamos los símbolos del alfabeto. */
@@ -283,7 +322,6 @@ AFND* estadosDistinguibles(AFND* afd, int* estadosAccesibles, int numAccesibles)
 	
 
 	/* Creamos todos los nuevos estados */
-	/* TODO Quitar i=0 etc del bucle, solo para pruebas */
 	for (aux=cmpState; aux!=NULL; aux=getNextCompoundState(aux)){
 		/* Obtenemos nombre y tipo del nuevo estado */
 		strcpy(name, "");
@@ -378,4 +416,31 @@ AFND* estadosDistinguibles(AFND* afd, int* estadosAccesibles, int numAccesibles)
 	free(matriz);
 
 	return newAFD;
+}
+
+
+/* Metodo que permite minimizar un automata finito determinista
+Parametros
+	afd -> puntero al automata finito determinista a simplificar 
+Return
+	Nuevo autómata con los estados inaccesibles eliminados 
+	y con agrupación de estados distinguibles
+*/
+AFND * AFNDMinimiza(AFND * afd){
+	AFND *nafd;
+	int *accesibles;
+	int i, numEstados, numAccesibles;
+
+	numEstados = AFNDNumEstados(afd);
+
+	/* Obtenemos una lista que contenga unicamente los estados accesibles */
+	accesibles = estadosAccesibles(afd);
+	for (i=0, numAccesibles=0; i<numEstados; i++){
+		if (accesibles[i] == 1){
+			accesibles[numAccesibles] = i;
+			numAccesibles++;
+		}
+	}
+
+	return estadosDistinguibles(afd, accesibles, numAccesibles);
 }
