@@ -160,11 +160,16 @@ void marcarDistinguiblesRecursivo(int p, int q, int **matriz, TupleDict *dict){
 	}
 }
 
-/* TODO Dividir en submetodos
-
-
+/*
+Metodo que permite obtener una estructura con los estados distinguibles del automata.
+Parametros
+	afd -> Antiguo automata
+	estadosAccesibles -> lista de estados accesibles. En cada posición, indica el indice del estado en el antiguo automata.
+	numAccesibles -> numero de estados accesibles
+Return
+	Lista con los estados distinguibles del nuevo automata.
 */
-AFND* estadosDistinguibles(AFND* afd, int* estadosAccesibles, int numAccesibles){
+CompoundState* estadosDistinguibles(AFND* afd, int* estadosAccesibles, int numAccesibles){
 	AFND* newAFD;
 	int **matriz, i, j, k, tipo1, tipo2, numSimbolos;
 	int dst1, dst2, marcado;
@@ -300,7 +305,6 @@ AFND* estadosDistinguibles(AFND* afd, int* estadosAccesibles, int numAccesibles)
 		}
 	}
 
-
 	/* Recorremos la matriz obteniendo los estados distinguibles */
 	CompoundState *cmpState = createCompoundState(numAccesibles, 0);
 	for (i=0; i<numAccesibles; i++){
@@ -311,6 +315,37 @@ AFND* estadosDistinguibles(AFND* afd, int* estadosAccesibles, int numAccesibles)
 		}
 	}
 
+
+	/* Liberamos la memoria auxiliar usada */
+	destroyTupleDict(dict);
+	for (i=0; i<numAccesibles; i++){
+		free(matriz[i]);
+	}
+	free(matriz);
+
+	return cmpState;
+}
+
+/*
+Metodo que permite obtener el nuevo automata minimizado a partir del antiguo,
+la estructura con los nuevos estados distinguibles y la lista de accesibles.
+Parametros
+	afd -> Antiguo automata
+	cmpState -> estructura con los nuevos estados distinguibles
+	estadosAccesibles -> lista de estados accesibles. En cada posición, indica el indice del estado en el antiguo automata.
+	numAccesibles -> numero de estados accesibles
+Return
+	Nuevo automata minimizado
+*/
+AFND *sintetizaAutomata(AFND * afd, CompoundState *cmpState, int* estadosAccesibles, int numAccesibles){
+	AFND* newAFD;
+	int i, j, k, numSimbolos, type;
+	CompoundState *aux;
+	int dst1, lenStatesList, *statesList;
+	char name[MAX_LEN], *temp;
+
+
+	numSimbolos = AFNDNumSimbolos(afd);
 
 	/* Creamos el nuevo autómata */
 	newAFD = AFNDNuevo("afd_min", getNumCompoundStates(cmpState), numSimbolos);
@@ -406,15 +441,6 @@ AFND* estadosDistinguibles(AFND* afd, int* estadosAccesibles, int numAccesibles)
 		}
 	}
 
-
-	/* Liberamos la memoria auxiliar usada */
-	destroyCompoundState(cmpState);
-	destroyTupleDict(dict);
-	for (i=0; i<numAccesibles; i++){
-		free(matriz[i]);
-	}
-	free(matriz);
-
 	return newAFD;
 }
 
@@ -428,6 +454,7 @@ Return
 */
 AFND * AFNDMinimiza(AFND * afd){
 	AFND *nafd;
+	CompoundState *cmpState;
 	int *accesibles;
 	int i, numEstados, numAccesibles;
 
@@ -442,5 +469,12 @@ AFND * AFNDMinimiza(AFND * afd){
 		}
 	}
 
-	return estadosDistinguibles(afd, accesibles, numAccesibles);
+
+	cmpState = estadosDistinguibles(afd, accesibles, numAccesibles);
+	nafd = sintetizaAutomata(afd, cmpState, accesibles, numAccesibles);
+
+	free(accesibles);
+	destroyCompoundState(cmpState);
+
+	return nafd;
 }
